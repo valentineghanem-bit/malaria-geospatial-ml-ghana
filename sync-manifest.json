@@ -1,0 +1,10 @@
+{
+ "project": "P6",
+ "repo": "aipoch-malaria-geospatial-ml-ghana",
+ "date": "2026-04-30",
+ "reporting": "STROBE",
+ "scope": "260 districts Ghana",
+ "N": "260",
+ "qa_badge": "QA_PASSED_2026-04-30.txt",
+ "sync_status": "VERIFIED"
+}

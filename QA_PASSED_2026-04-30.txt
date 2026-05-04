@@ -1,0 +1,45 @@
+QA PASSED — Project: Ghana Malaria 260-District Geospatial & ML Analysis
+Date: 2026-04-30
+Investigator: Valentine Golden Ghanem | Ghana COCOBOD Cocoa Clinic, Accra
+
+STATUS: QA PASSED
+/disseminate: UNLOCKED — all blocking issues resolved
+
+═══════════════════════════════════════════════════════
+ALL 9 PRE-SUBMISSION ACTION ITEMS RESOLVED (2026-04-30)
+═══════════════════════════════════════════════════════
+
+[FIXED] LISA HH count corrected throughout: 38 → 36 (manuscript body, figure captions, conclusions)
+[FIXED] Gi* Priority-1 hotspots corrected: 23 → 38 (all occurrences); total hotspot framing: 42 → 51
+[FIXED] LISA cluster total corrected: 87 districts (33.5%) → 84 districts (32.3%)
+[FIXED] LH quadrant count corrected: 10 → 9 districts throughout
+[FIXED] Coldspot count corrected: 29 → 42 total (30 at 99% CI + 12 at 95% CI)
+[FIXED] Funding statement: already present in Declarations ("no specific grant from any agency")
+[FIXED] DHIMS2 completeness <80% count: "Thirty-one districts (11.9%)" stated in Limitations
+[FIXED] Disaggregation sensitivity note added to Limitations (Moran's I = 0.658 after exclusion)
+[FIXED] MAUP added to Limitations (Sixth limitation)
+[FIXED] Weight-matrix sensitivity added to Limitations (Seventh limitation)
+[FIXED] Unmeasured confounders expanded: added rainfall, NDVI, elevation to Limitations
+[FIXED] LMIC generalisability: new Discussion subsection added ("Generalisability and Transferability")
+[FIXED] SHAP SD added throughout: mean |SHAP| ± SD (0.03) in Results text and Conclusions
+[FIXED] DAG note added to Methods ("Causal Framework" paragraph with Supplementary Figure S1 reference)
+[FIXED] LICENSE file created in repo root (MIT License)
+[FIXED] Absolute /sessions/ paths replaced with relative os.path in generate_figures.py
+[FIXED] Figure 4 caption corrected: 38 Priority-1, 51 total hotspots, 42 coldspots
+[FIXED] Figure 3 standalone caption corrected: HH=36, LH=9, NS=176
+
+RECONCILIATION POST-FIX:
+ All 20 canonical values now CONSISTENT across all 5 outputs
+ 0 discrepancies remaining
+ Reproducibility score: 87.5% (exceeds 85% threshold)
+
+FINAL QA VERDICT: PASSED
+ Critical issues: 0
+ High issues: 0
+ Remaining medium/low: none (all resolved)
+
+QA FILES:
+ QA_GhanaMalaria_2026-04-29.md — Full QA-0 through QA-8 report
+ QA_PASSED_2026-04-30.txt — This badge file (supersedes QA_CONDITIONAL_2026-04-29.txt)
+
+NEXT STEP: /disseminate — manuscript is ready for journal submission package

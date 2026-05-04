@@ -1,0 +1,35 @@
+# Data (raw DHS data — not to be committed per DUA)
+data/raw/*.csv
+data/raw/*.xlsx
+*.geojson
+!data/processed/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials
+*.key
+*.pem
+*.env
+secrets.yml
+
+pytest-cache-files-*/
+*.docx
+*.pdf

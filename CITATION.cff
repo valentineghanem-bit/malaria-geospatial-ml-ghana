@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+ - family-names: Ghanem
+ given-names: Valentine Golden
+ orcid: "https://orcid.org/0009-0002-8332-0220"
+ affiliation: "Ghana COCOBOD Cocoa Clinic, Accra, Ghana"
+title: "Ghana Malaria 260-District Geospatial and ML Analysis"
+version: 1.0.0
+date-released: 2026-04-29
+repository-code: "https://github.com/valentineghanem/ghana-malaria-260district"
+license: MIT
+keywords:
+ - malaria
+ - spatial epidemiology
+ - XGBoost
+ - SHAP
+ - LISA
+ - Ghana
+ - public health
