@@ -45,12 +45,12 @@ def main() -> None:
  logo = LeaveOneGroupOut()
  aucs, briers = [], []
  for train_idx, test_idx in logo.split(X, y, groups):
- rf = RandomForestClassifier(**RF_PARAMS)
- rf.fit(X[train_idx], y[train_idx])
- prob = rf.predict_proba(X[test_idx])[:, 1]
- if len(np.unique(y[test_idx])) > 1:
- aucs.append(roc_auc_score(y[test_idx], prob))
- briers.append(brier_score_loss(y[test_idx], prob))
+  rf = RandomForestClassifier(**RF_PARAMS)
+  rf.fit(X[train_idx], y[train_idx])
+  prob = rf.predict_proba(X[test_idx])[:, 1]
+  if len(np.unique(y[test_idx])) > 1:
+   aucs.append(roc_auc_score(y[test_idx], prob))
+   briers.append(brier_score_loss(y[test_idx], prob))
 
  print(f"\n[/uq-flag] Random Forest LODO-CV:")
  print(f" AUC-ROC: {np.mean(aucs):.4f} (SD={np.std(aucs):.4f})")

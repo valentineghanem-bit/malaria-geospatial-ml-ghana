@@ -32,15 +32,15 @@ def run_lodo_cv(df):
  districts = df['district'].values
  aucs, briers = [], []
  for i, dist in enumerate(districts):
- train_mask = districts != dist
- X_tr, y_tr = X[train_mask], y[train_mask]
- X_te, y_te = X[~train_mask], y[~train_mask]
- model = XGBClassifier(**XGB_PARAMS)
- model.fit(X_tr, y_tr)
- prob = model.predict_proba(X_te)[:, 1]
- if len(np.unique(y_te)) > 1:
- aucs.append(roc_auc_score(y_te, prob))
- briers.append(brier_score_loss(y_te, prob))
+  train_mask = districts != dist
+  X_tr, y_tr = X[train_mask], y[train_mask]
+  X_te, y_te = X[~train_mask], y[~train_mask]
+  model = XGBClassifier(**XGB_PARAMS)
+  model.fit(X_tr, y_tr)
+  prob = model.predict_proba(X_te)[:, 1]
+  if len(np.unique(y_te)) > 1:
+   aucs.append(roc_auc_score(y_te, prob))
+   briers.append(brier_score_loss(y_te, prob))
  return np.mean(aucs), np.std(aucs), np.mean(briers)
 
 if __name__ == '__main__':

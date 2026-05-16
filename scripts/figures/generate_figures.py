@@ -97,13 +97,13 @@ df = pd.DataFrame(rows)
 # Classify eco zone
 def eco_zone(reg):
  if reg in ('NORTHERN','NORTHERN EAST','SAVANNAH','UPPER WEST','UPPER EAST'):
- return 'Guinea/Sudan Savannah'
+  return 'Guinea/Sudan Savannah'
  elif reg in ('OTI','VOLTA','BONO','BONO EAST','AHAFO'):
- return 'Transitional Forest–Savannah'
+  return 'Transitional Forest–Savannah'
  elif reg in ('EASTERN','CENTRAL','WESTERN','WESTERN NORTH'):
- return 'Forest'
+  return 'Forest'
  else:
- return 'Coastal/Urban'
+  return 'Coastal/Urban'
 
 df['eco_zone'] = df['REGION'].apply(eco_zone)
 
