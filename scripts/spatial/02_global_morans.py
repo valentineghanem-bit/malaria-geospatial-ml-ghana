@@ -3,8 +3,8 @@
 02_global_morans.py
 Compute Global Moran's I for malaria burden indicators across 260 Ghana districts.
 Author: Valentine Golden Ghanem | April 2026
-Inputs: data/processed/Ghana_Malaria_260District_MasterDataset.csv
- data/raw/Ghana_New_260_District.geojson
+Inputs: data/processed/Ghana_Malaria_261District_MasterDataset.csv
+ data/raw/Ghana_New_261_District.geojson
 Outputs: data/processed/morans_results.csv
 """
 import geopandas as gpd
@@ -20,8 +20,8 @@ PERMUTATIONS = 999
 K = 8
 
 def load_data():
- gdf = gpd.read_file('data/raw/Ghana_New_260_District.geojson').to_crs('EPSG:32630')
- df = pd.read_csv('data/processed/Ghana_Malaria_260District_MasterDataset.csv')
+ gdf = gpd.read_file('data/raw/Ghana_New_261_District.geojson').to_crs('EPSG:32630')
+ df = pd.read_csv('data/processed/Ghana_Malaria_261District_MasterDataset.csv')
  gdf['district'] = gdf['DISTRICT'].str.strip()
  return gdf.merge(df, on='district', how='left')
 

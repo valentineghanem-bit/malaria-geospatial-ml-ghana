@@ -5,7 +5,7 @@ Feature matrix construction and binary target creation for ML pipeline.
 
 Author : Valentine Golden Ghanem | Ghana COCOBOD Cocoa Clinic
 Date : April 2026
-Inputs : data/processed/Ghana_Malaria_260District_MasterDataset.csv
+Inputs : data/processed/Ghana_Malaria_261District_MasterDataset.csv
 Outputs: data/processed/feature_matrix.csv, data/processed/target_vector.csv
 Tenet 8 (Reproducibility): missing values imputed with column medians; logged.
 """
@@ -36,8 +36,8 @@ HIGH_BURDEN_THRESHOLD = 100 # cases per 1,000 — top-quartile classification
 
 
 def main() -> None:
- df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv"))
- assert len(df) == 260, f"Expected 260 rows, got {len(df)}"
+ df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv"))
+ assert len(df) == 261, f"Expected 260 rows, got {len(df)}"
  print(f"[06] Dataset: {df.shape[0]} rows × {df.shape[1]} cols")
 
  inc_col = next(c for c in df.columns if "incidence" in c.lower())

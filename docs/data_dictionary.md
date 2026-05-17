@@ -1,6 +1,6 @@
 # Data Dictionary — Ghana Malaria 260-District Master Dataset
 
-**Project:** Spatial distribution, determinants, and ML-based risk prediction of malaria across 260 districts of Ghana 
+**Project:** Spatial distribution, determinants, and ML-based risk prediction of malaria across 261 districts of Ghana 
 **Principal Investigator:** Valentine Golden Ghanem | Ghana COCOBOD Cocoa Clinic, Accra 
 **Dataset Version:** v1.0 | April 2026 
 **Geographic Unit:** Ghana New 260-District framework (administrative restructuring 2019–2020) 
@@ -32,7 +32,7 @@
 
 | Variable | Type | Unit | Definition | Source | Canonical / Notes |
 |----------|------|------|------------|--------|-------------------|
-| `district_id` | int | — | Unique district identifier (1–260); assigned by row order in Ghana_New_260_District.geojson | GSS 2021 | All 260 districts required |
+| `district_id` | int | — | Unique district identifier (1–260); assigned by row order in Ghana_New_261_District.geojson | GSS 2021 | All 261 districts required |
 | `district` | str | — | Official district name per Ghana New 260-District framework | GSS 2021 | Must match geojson `ADM2_EN` attribute exactly (case-sensitive) |
 | `region` | str | — | Administrative region (16 regions post-2019 restructuring); used as grouping variable for LODO-CV | GSS 2021 | 16 unique values |
 | `ecological_zone` | str | — | Ecological classification: `Guinea Savannah` · `Sudan Savannah` · `Transitional Forest-Savannah` · `Forest` · `Coastal/Urban` | Author classification (WorldPop + GSS boundaries) | 5 categories |
@@ -123,7 +123,7 @@
 
 - **Missing values:** Encoded as `NA` (R-style); do not mix with empty string or 0.
 - **Percentages:** Stored as 0–100 (not 0–1 proportions), except `poverty_index` which is 0–1 by convention.
-- **District name standardisation:** Must match `ADM2_EN` in `Ghana_New_260_District.geojson` exactly. Any mismatch causes GeoJSON join failure in dashboard.
+- **District name standardisation:** Must match `ADM2_EN` in `Ghana_New_261_District.geojson` exactly. Any mismatch causes GeoJSON join failure in dashboard.
 - **Column naming:** `snake_case`; no spaces; units embedded in column name where unambiguous (e.g., `u5mr` = per 1,000 live births by convention).
 - **DHIMS2 reporting completeness <80%:** Flagged in `reporting_completeness_pct`; sensitivity analysis comparing complete vs. all districts is mandatory before final manuscript submission.
 

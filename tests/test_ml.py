@@ -22,7 +22,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROC = os.path.join(REPO_ROOT, "data", "processed")
 MODELS = os.path.join(REPO_ROOT, "data", "models")
 FIG_DIR = os.path.join(REPO_ROOT, "scripts", "figures")
-MASTER_CSV = os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv")
+MASTER_CSV = os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv")
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ class TestFeatureMatrix:
  def test_feature_matrix_shape(self):
   """Feature matrix must have exactly 260 rows."""
   df = load_proc_csv("feature_matrix.csv")
-  assert len(df) == 260, f"Feature matrix has {len(df)} rows; expected 260"
+  assert len(df) == 261, f"Feature matrix has {len(df)} rows; expected 260"
 
   def test_feature_count(self):
    """Feature matrix must have ≥3 columns (minimum viable feature set)."""
@@ -87,7 +87,7 @@ class TestTargetVector:
  def test_target_length(self):
   """Target vector must have 260 rows."""
   df = load_proc_csv("target_vector.csv")
-  assert len(df) == 260, f"Target vector has {len(df)} rows; expected 260"
+  assert len(df) == 261, f"Target vector has {len(df)} rows; expected 260"
 
   def test_binary_outcome_present(self):
    """high_burden_binary column must be present."""

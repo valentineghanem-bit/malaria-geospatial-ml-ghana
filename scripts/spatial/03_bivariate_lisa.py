@@ -39,8 +39,8 @@ def quadrant(z_x: float, z_lag: float, p: float) -> str:
 
 
 def main() -> None:
- df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv"))
- assert len(df) == 260
+ df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv"))
+ assert len(df) == 261
 
  inc_col = next(c for c in df.columns if "incidence" in c.lower())
  itn_col = next(c for c in df.columns if "itn" in c.lower() or "net" in c.lower())

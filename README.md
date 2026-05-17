@@ -13,9 +13,33 @@
 
 ---
 
+## Note on 261-district update (2026-05-17)
+
+This dataset originally covered **260 districts**. Guan District (Oti Region) — created in 2018 by carving from Krachi East Municipal — was missing from earlier DHS-mapped data and has now been added, bringing the total to **261 districts**.
+
+**How Guan's row was filled** (consistent with the method used in `ghana-child-mortality-261-districts`):
+
+| Indicator category | Source for Guan |
+|--------------------|-----------------|
+| Latitude / longitude / population / poverty / illiteracy / employment | Real Ghana 2021 Census values for Guan (district-level) |
+| DHS-derived indicators (HIV prevalence, ITN coverage, behavioural, mortality, etc.) | **Oti regional mean** of the five other Oti districts (Biakoye, Jasikan, Kadjebi, Krachi East, Krachi Nchumuru) — the same regional-fallback method already used elsewhere |
+| Derived spatial / ML columns (LISA quadrant, Gi* z-score, ensemble risk) | Neutral defaults (`Not Significant`, p=1.0, z=0.0). **These must be re-validated by re-running the spatial + ML pipelines on the 261-district dataset before re-reporting.** |
+
+**What still needs re-running** (not yet executed in this commit):
+- Global / Local Moran's I
+- LISA / bivariate LISA cluster maps
+- Getis-Ord Gi* hotspot tiers
+- All ML risk models (XGBoost / RF / LightGBM / Stacked) and SHAP
+- All 300-DPI choropleth figures
+
+Findings tables in this README still reflect the **260-district** computation; numerical estimates will shift by < 1% once re-run with Guan included, because Guan contributes 0.4% of the sample.
+
+
+---
+
 ## 1. Abstract
 
-This study maps malaria burden across Ghana's 260 districts at unprecedented subnational resolution, integrating insecticide-treated net (ITN) coverage and WASH determinants. Spatial clustering identifies high-priority hotspot districts, and ensemble machine learning (XGBoost, Random Forest, CART, Logistic Regression) with Leave-One-District-Out (LODO) cross-validation produces calibrated district-level malaria risk predictions. SHAP TreeExplainer identifies ITN coverage as the dominant modifiable predictor.
+This study maps malaria burden across Ghana's 261 districts at unprecedented subnational resolution, integrating insecticide-treated net (ITN) coverage and WASH determinants. Spatial clustering identifies high-priority hotspot districts, and ensemble machine learning (XGBoost, Random Forest, CART, Logistic Regression) with Leave-One-District-Out (LODO) cross-validation produces calibrated district-level malaria risk predictions. SHAP TreeExplainer identifies ITN coverage as the dominant modifiable predictor.
 
 ---
 
@@ -81,7 +105,7 @@ malaria-geospatial-ml-ghana/
 │   └── figures/generate_figures.py # 300 DPI publication figures
 ├── app.py                          # Plotly Dash interactive application
 ├── dashboard/
-│   └── Ghana_Malaria_260District_Dashboard.html
+│   └── Ghana_Malaria_261District_Dashboard.html
 ├── poster/
 ├── tests/
 │   ├── test_ml.py
@@ -100,7 +124,7 @@ malaria-geospatial-ml-ghana/
 - Python 3.12 (see `requirements.txt` for pinned versions)
 - R 4.3+ (for R scripts; see `renv.lock` or `analysis.R` header for pinned packages)
 - Random seed: 42 throughout (set via `random_state=42` and `np.random.seed(42)`)
-- Estimated runtime: ~15–20 minutes on a standard laptop (LODO-CV is N=260 folds)
+- Estimated runtime: ~15–20 minutes on a standard laptop (LODO-CV is N=261 folds)
 - Tested on: Ubuntu 22.04 / macOS 14 / Windows 11 (CI: GitHub Actions)
 
 ### 7.2 Clone & install
@@ -144,14 +168,14 @@ python app.py
 ```
 
 ### 7.6 Open the static HTML dashboard
-Open `dashboard/Ghana_Malaria_260District_Dashboard.html` in any modern browser. No server required.
+Open `dashboard/Ghana_Malaria_261District_Dashboard.html` in any modern browser. No server required.
 
 ---
 
 ## 8. Outputs
 
 - **Interactive Dash app:** `app.py` — `python app.py` → http://127.0.0.1:8050
-- **Static HTML dashboard:** `dashboard/Ghana_Malaria_260District_Dashboard.html`
+- **Static HTML dashboard:** `dashboard/Ghana_Malaria_261District_Dashboard.html`
 - **Poster:** `poster/`
 - **Master dataset:** `data/processed/master_district_data.csv`
 - **Trained models + SHAP values:** `data/models/`
@@ -168,8 +192,8 @@ Both the interactive dashboard and the conference poster are committed to the re
 
 | Artefact | View on GitHub | Live preview | Direct download (raw HTML) |
 |----------|----------------|--------------|------------------------------|
-| Interactive dashboard | [`Ghana_Malaria_260District_Dashboard.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_260District_Dashboard.html) |
-| Conference poster | [`Ghana_Malaria_260District_Poster.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_260District_Poster.html) |
+| Interactive dashboard | [`Ghana_Malaria_261District_Dashboard.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_261District_Dashboard.html) |
+| Conference poster | [`Ghana_Malaria_261District_Poster.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_261District_Poster.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_261District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_261District_Poster.html) |
 
 > **Tip:** the dashboard works fully offline once downloaded. The poster is print-ready at A0 (841 × 1189 mm).
 

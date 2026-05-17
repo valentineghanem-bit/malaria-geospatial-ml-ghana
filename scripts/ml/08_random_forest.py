@@ -38,7 +38,7 @@ def main() -> None:
  targets = pd.read_csv(os.path.join(PROC, "target_vector.csv"))
  y = targets["high_burden_binary"].values
 
- master = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv"))
+ master = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv"))
  region_col = next((c for c in master.columns if "region" in c.lower()), None)
  groups = master[region_col].values if region_col else np.arange(len(y))
 

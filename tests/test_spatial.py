@@ -17,7 +17,7 @@ import pandas as pd
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROC = os.path.join(REPO_ROOT, "data", "processed")
-MASTER_CSV = os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv")
+MASTER_CSV = os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv")
 
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -42,9 +42,9 @@ class TestMasterDataset:
  """Structure and completeness checks on the master CSV."""
 
  def test_district_count(self):
-  """Dataset must contain exactly 260 districts (Ghana New 260-District framework)."""
+  """Dataset must contain exactly 261 districts (Ghana New 260-District framework)."""
   df = load_master()
-  assert len(df) == 260, f"Expected 260 rows, got {len(df)}"
+  assert len(df) == 261, f"Expected 260 rows, got {len(df)}"
 
   def test_no_duplicate_districts(self):
    """Each district appears exactly once."""

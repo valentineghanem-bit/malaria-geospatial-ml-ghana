@@ -4,7 +4,7 @@ generate_figures.py
 Ghana Malaria Geospatial ML — Publication Figure Generation
 Valentine Golden Ghanem | Ghana COCOBOD Cocoa Clinic | April 2026
 
-Inputs: uploads/Ghana_New_260_District.geojson
+Inputs: uploads/Ghana_New_261_District.geojson
 Outputs: outputs/fig1_choropleth.png
  outputs/fig2_morans_scatterplot.png
  outputs/fig3_bivariate_lisa.png
@@ -30,7 +30,7 @@ warnings.filterwarnings('ignore')
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 OUTDIR = os.path.join(_SCRIPT_DIR, '..', 'outputs') # repo: scripts/figures/ -> ../outputs
-GEO = os.path.join(_SCRIPT_DIR, '..', 'data', 'raw', 'Ghana_New_260_District.geojson')
+GEO = os.path.join(_SCRIPT_DIR, '..', 'data', 'raw', 'Ghana_New_261_District.geojson')
 DPI = 300
 np.random.seed(42)
 
@@ -419,7 +419,7 @@ ax.set_yticks(range(n_feats))
 ax.set_yticklabels([f[0] for f in reversed(features)], fontsize=11)
 ax.set_xlabel('SHAP value (impact on model output log-odds)', fontsize=12,
  fontweight='semibold', color='#333333')
-ax.set_title('Figure 5. SHAP Summary Beeswarm Plot — XGBoost Model\nDistrict-Level High Malaria Burden Prediction (n=260 districts)',
+ax.set_title('Figure 5. SHAP Summary Beeswarm Plot — XGBoost Model\nDistrict-Level High Malaria Burden Prediction (n=261 districts)',
  fontsize=13, fontweight='bold', color='#1A3A5C', pad=10)
 ax.axvline(0, color='#333333', lw=1.0, ls='--', alpha=0.7)
 ax.grid(axis='x', alpha=0.3, color='#AAAAAA')

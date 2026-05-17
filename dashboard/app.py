@@ -4,7 +4,7 @@ import os, http.server, threading, webbrowser
 
 PORT = 8050
 DIR  = os.path.dirname(os.path.abspath(__file__))
-FILE = "Ghana_Malaria_260District_Dashboard.html"
+FILE = "Ghana_Malaria_261District_Dashboard.html"
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):

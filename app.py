@@ -13,7 +13,7 @@ from dash import dcc, html, Input, Output, dash_table
 import dash_bootstrap_components as dbc
 
 DATA = os.path.join(os.path.dirname(__file__), "data", "processed",
-                    "Ghana_Malaria_260District_MasterDataset.csv")
+                    "Ghana_Malaria_261District_MasterDataset.csv")
 df = pd.read_csv(DATA)
 
 OUTCOMES = {

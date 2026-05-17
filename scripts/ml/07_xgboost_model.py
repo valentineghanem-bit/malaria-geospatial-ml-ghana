@@ -3,7 +3,7 @@
 07_xgboost_model.py
 XGBoost district-level high malaria burden prediction with LODO spatial cross-validation.
 Author: Valentine Golden Ghanem | April 2026
-Inputs: data/processed/Ghana_Malaria_260District_MasterDataset.csv
+Inputs: data/processed/Ghana_Malaria_261District_MasterDataset.csv
 Outputs: data/processed/xgb_lodo_results.csv
  data/processed/xgb_model_metrics.csv
 """
@@ -44,7 +44,7 @@ def run_lodo_cv(df):
  return np.mean(aucs), np.std(aucs), np.mean(briers)
 
 if __name__ == '__main__':
- df = pd.read_csv('data/processed/Ghana_Malaria_260District_MasterDataset.csv')
+ df = pd.read_csv('data/processed/Ghana_Malaria_261District_MasterDataset.csv')
  print(f"Running LODO-CV across {len(df)} districts...")
  mean_auc, std_auc, mean_brier = run_lodo_cv(df)
  ci_lo, ci_hi = mean_auc - 1.96*std_auc, mean_auc + 1.96*std_auc

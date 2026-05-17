@@ -12,7 +12,7 @@ suppressPackageStartupMessages({
 set.seed(42)
 
 cat("── Loading data ──────────────────────────────────────────────────────\n")
-df <- read_csv("data/processed/Ghana_Malaria_260District_MasterDataset.csv",
+df <- read_csv("data/processed/Ghana_Malaria_261District_MasterDataset.csv",
                show_col_types = FALSE)
 cat(sprintf("Loaded: %d districts × %d variables\n", nrow(df), ncol(df)))
 

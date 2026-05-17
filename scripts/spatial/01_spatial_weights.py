@@ -5,7 +5,7 @@ Construct KNN (k=8) and Rook contiguity weight matrices.
 
 Author : Valentine Golden Ghanem | Ghana COCOBOD Cocoa Clinic
 Date : April 2026
-Inputs : data/raw/Ghana_New_260_District.geojson
+Inputs : data/raw/Ghana_New_261_District.geojson
 Outputs: data/processed/weights_knn8.pkl, data/processed/weights_rook.pkl
 Fail-Fast Gate: Syntax OK | Logic OK | Epi context OK | PEP8 OK
 """
@@ -45,7 +45,7 @@ def build_rook(gdf: gpd.GeoDataFrame):
 
 
 def main() -> None:
- geojson = os.path.join(RAW_DIR, "Ghana_New_260_District.geojson")
+ geojson = os.path.join(RAW_DIR, "Ghana_New_261_District.geojson")
  if not os.path.exists(geojson):
   raise FileNotFoundError(
   f"GeoJSON missing: {geojson}\n"
@@ -54,7 +54,7 @@ def main() -> None:
   )
 
   gdf = gpd.read_file(geojson)
-  assert len(gdf) == 260, f"Expected 260 districts, got {len(gdf)}"
+  assert len(gdf) == 261, f"Expected 261 districts, got {len(gdf)}"
   print(f"[01] Loaded {len(gdf)} districts | CRS: {gdf.crs}")
 
   w_knn = build_knn(gdf, k=8)

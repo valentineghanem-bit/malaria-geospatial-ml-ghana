@@ -28,7 +28,7 @@ CANDIDATE_FEATURES = [
 
 
 def main() -> None:
- df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_260District_MasterDataset.csv"))
+ df = pd.read_csv(os.path.join(PROC, "Ghana_Malaria_261District_MasterDataset.csv"))
  inc_col = next(c for c in df.columns if "incidence" in c.lower())
  features = [c for c in CANDIDATE_FEATURES if c in df.columns]
  if len(features) < 2:
