@@ -47,32 +47,32 @@ def build_rook(gdf: gpd.GeoDataFrame):
 def main() -> None:
  geojson = os.path.join(RAW_DIR, "Ghana_New_260_District.geojson")
  if not os.path.exists(geojson):
- raise FileNotFoundError(
- f"GeoJSON missing: {geojson}\n"
- "Download from Ghana Statistical Service (2021) → data/raw/\n"
- "URL: https://www.statsghana.gov.gh"
- )
+  raise FileNotFoundError(
+  f"GeoJSON missing: {geojson}\n"
+  "Download from Ghana Statistical Service (2021) → data/raw/\n"
+  "URL: https://www.statsghana.gov.gh"
+  )
 
- gdf = gpd.read_file(geojson)
- assert len(gdf) == 260, f"Expected 260 districts, got {len(gdf)}"
- print(f"[01] Loaded {len(gdf)} districts | CRS: {gdf.crs}")
+  gdf = gpd.read_file(geojson)
+  assert len(gdf) == 260, f"Expected 260 districts, got {len(gdf)}"
+  print(f"[01] Loaded {len(gdf)} districts | CRS: {gdf.crs}")
 
- w_knn = build_knn(gdf, k=8)
- knn_path = os.path.join(OUT_DIR, "weights_knn8.pkl")
- with open(knn_path, "wb") as fh:
- pickle.dump(w_knn, fh)
- print(f"[01] KNN(k=8) → {knn_path}")
- print(f" Mean neighbours: {w_knn.mean_neighbors:.2f} | Islands: {w_knn.islands}")
+  w_knn = build_knn(gdf, k=8)
+  knn_path = os.path.join(OUT_DIR, "weights_knn8.pkl")
+  with open(knn_path, "wb") as fh:
+   pickle.dump(w_knn, fh)
+   print(f"[01] KNN(k=8) → {knn_path}")
+   print(f" Mean neighbours: {w_knn.mean_neighbors:.2f} | Islands: {w_knn.islands}")
 
- w_rook = build_rook(gdf)
- rook_path = os.path.join(OUT_DIR, "weights_rook.pkl")
- with open(rook_path, "wb") as fh:
- pickle.dump(w_rook, fh)
- print(f"[01] Rook → {rook_path}")
- print(f" Min neighbours: {w_rook.min_neighbors} | Max: {w_rook.max_neighbors}")
+   w_rook = build_rook(gdf)
+   rook_path = os.path.join(OUT_DIR, "weights_rook.pkl")
+   with open(rook_path, "wb") as fh:
+    pickle.dump(w_rook, fh)
+    print(f"[01] Rook → {rook_path}")
+    print(f" Min neighbours: {w_rook.min_neighbors} | Max: {w_rook.max_neighbors}")
 
- assert w_knn.n == 260 and w_rook.n == 260
- print("[01] ✓ Spatial weight matrices validated.")
+    assert w_knn.n == 260 and w_rook.n == 260
+    print("[01] ✓ Spatial weight matrices validated.")
 
 
 if __name__ == "__main__":

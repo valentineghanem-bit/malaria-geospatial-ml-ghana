@@ -28,12 +28,12 @@ def load_data():
 def compute_morans(gdf, indicators, w):
  results = []
  for ind in indicators:
- y = gdf[ind].fillna(gdf[ind].median()).values
- mi = Moran(y, w, permutations=PERMUTATIONS, seed=RANDOM_SEED)
- results.append({'indicator': ind, 'morans_I': round(mi.I, 4),
- 'z_score': round(mi.z_norm, 3), 'p_value': round(mi.p_norm, 4)})
- print(f" {ind}: I={mi.I:.4f}, z={mi.z_norm:.3f}, p={mi.p_norm:.4f}")
- return pd.DataFrame(results)
+  y = gdf[ind].fillna(gdf[ind].median()).values
+  mi = Moran(y, w, permutations=PERMUTATIONS, seed=RANDOM_SEED)
+  results.append({'indicator': ind, 'morans_I': round(mi.I, 4),
+  'z_score': round(mi.z_norm, 3), 'p_value': round(mi.p_norm, 4)})
+  print(f" {ind}: I={mi.I:.4f}, z={mi.z_norm:.3f}, p={mi.p_norm:.4f}")
+  return pd.DataFrame(results)
 
 if __name__ == '__main__':
  gdf = load_data()

@@ -46,42 +46,42 @@ def main() -> None:
  available = [c for c in FEATURE_COLS if c in df.columns]
  if len(available) < 3:
  # Fallback: all numeric columns except outcomes
- exclude = [c for c in df.columns if "incidence" in c.lower()
- or "mortality" in c.lower() or "burden" in c.lower()]
- available = [c for c in df.select_dtypes(include="number").columns
- if c not in exclude][:10]
- print(f"[06] Features used ({len(available)}): {available}")
+  exclude = [c for c in df.columns if "incidence" in c.lower()
+  or "mortality" in c.lower() or "burden" in c.lower()]
+  available = [c for c in df.select_dtypes(include="number").columns
+  if c not in exclude][:10]
+  print(f"[06] Features used ({len(available)}): {available}")
 
- X = df[available].copy()
+  X = df[available].copy()
 
  # Binary outcome: high-burden district
- df["high_burden_binary"] = (df[inc_col] >= HIGH_BURDEN_THRESHOLD).astype(int)
- n_high = df["high_burden_binary"].sum()
- print(f"[06] High-burden districts (≥{HIGH_BURDEN_THRESHOLD}/1,000): "
- f"{n_high} ({100*n_high/len(df):.1f}%) — class balance check")
+  df["high_burden_binary"] = (df[inc_col] >= HIGH_BURDEN_THRESHOLD).astype(int)
+  n_high = df["high_burden_binary"].sum()
+  print(f"[06] High-burden districts (≥{HIGH_BURDEN_THRESHOLD}/1,000): "
+  f"{n_high} ({100*n_high/len(df):.1f}%) — class balance check")
 
  # Missing value audit — Tenet 4 (Ground Truth Protocol)
- missing = X.isnull().sum()
- if missing.any():
- print("[06] Missing values detected — imputing with column medians:")
- for col, n in missing[missing > 0].items():
- pct = 100 * n / len(X)
- print(f" {col}: {n} missing ({pct:.1f}%)")
- X = X.fillna(X.median())
+  missing = X.isnull().sum()
+  if missing.any():
+   print("[06] Missing values detected — imputing with column medians:")
+   for col, n in missing[missing > 0].items():
+    pct = 100 * n / len(X)
+    print(f" {col}: {n} missing ({pct:.1f}%)")
+    X = X.fillna(X.median())
 
  # No infinite values
- inf_mask = X.isin([np.inf, -np.inf])
- if inf_mask.any().any():
- X = X.replace([np.inf, -np.inf], np.nan).fillna(X.median())
- print("[06] ⚠ Infinite values replaced with column medians.")
+    inf_mask = X.isin([np.inf, -np.inf])
+    if inf_mask.any().any():
+     X = X.replace([np.inf, -np.inf], np.nan).fillna(X.median())
+     print("[06] ⚠ Infinite values replaced with column medians.")
 
  # Save outputs
- fm_path = os.path.join(PROC, "feature_matrix.csv")
- tv_path = os.path.join(PROC, "target_vector.csv")
- X.to_csv(fm_path, index=False)
- df[[inc_col, "high_burden_binary"]].to_csv(tv_path, index=False)
- print(f"\n[06] ✓ Feature matrix ({X.shape}) → {fm_path}")
- print(f"[06] ✓ Target vector → {tv_path}")
+     fm_path = os.path.join(PROC, "feature_matrix.csv")
+     tv_path = os.path.join(PROC, "target_vector.csv")
+     X.to_csv(fm_path, index=False)
+     df[[inc_col, "high_burden_binary"]].to_csv(tv_path, index=False)
+     print(f"\n[06] ✓ Feature matrix ({X.shape}) → {fm_path}")
+     print(f"[06] ✓ Target vector → {tv_path}")
 
 
 if __name__ == "__main__":

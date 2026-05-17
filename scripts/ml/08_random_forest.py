@@ -62,17 +62,17 @@ def main() -> None:
  final_rf = RandomForestClassifier(**RF_PARAMS)
  final_rf.fit(X, y)
  with open(os.path.join(MODELS, "rf_model.pkl"), "wb") as fh:
- pickle.dump(final_rf, fh)
+  pickle.dump(final_rf, fh)
 
- pd.DataFrame([{
- "model": "RandomForest",
- "mean_AUC": round(float(np.mean(aucs)), 4),
- "sd_AUC": round(float(np.std(aucs)), 4),
- "mean_Brier": round(float(np.mean(briers)), 4),
- "n_folds": len(aucs),
- "random_seed": SEED,
- }]).to_csv(os.path.join(PROC, "rf_results.csv"), index=False)
- print("[08] ✓ RF model and results saved.")
+  pd.DataFrame([{
+  "model": "RandomForest",
+  "mean_AUC": round(float(np.mean(aucs)), 4),
+  "sd_AUC": round(float(np.std(aucs)), 4),
+  "mean_Brier": round(float(np.mean(briers)), 4),
+  "n_folds": len(aucs),
+  "random_seed": SEED,
+  }]).to_csv(os.path.join(PROC, "rf_results.csv"), index=False)
+  print("[08] ✓ RF model and results saved.")
 
 
 if __name__ == "__main__":

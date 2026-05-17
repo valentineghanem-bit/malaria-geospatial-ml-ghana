@@ -28,14 +28,14 @@ ALPHA = 0.05
 def quadrant(z_x: float, z_lag: float, p: float) -> str:
  """Assign LISA quadrant label based on standardised values and significance."""
  if p >= ALPHA:
- return "Not Significant"
- if z_x >= 0 and z_lag >= 0:
- return "High-High" # ITN deficit co-located with high incidence
- if z_x < 0 and z_lag < 0:
- return "Low-Low" # Good ITN coverage co-located with low incidence
- if z_x >= 0 and z_lag < 0:
- return "High-Low" # Spatial outlier
- return "Low-High" # Spatial outlier
+  return "Not Significant"
+  if z_x >= 0 and z_lag >= 0:
+   return "High-High" # ITN deficit co-located with high incidence
+   if z_x < 0 and z_lag < 0:
+    return "Low-Low" # Good ITN coverage co-located with low incidence
+    if z_x >= 0 and z_lag < 0:
+     return "High-Low" # Spatial outlier
+     return "Low-High" # Spatial outlier
 
 
 def main() -> None:
@@ -52,38 +52,38 @@ def main() -> None:
  y = zscore(df[inc_col].values)
 
  with open(os.path.join(PROC, "weights_rook.pkl"), "rb") as fh:
- w = pickle.load(fh)
+  w = pickle.load(fh)
 
- np.random.seed(SEED)
- lbv = Moran_Local_BV(x, y, w, permutations=999, seed=SEED)
+  np.random.seed(SEED)
+  lbv = Moran_Local_BV(x, y, w, permutations=999, seed=SEED)
 
- res = pd.DataFrame({
- "district": df[dist_col].values,
- "local_I": lbv.Is,
- "p_sim": lbv.p_sim,
- "z_x_standardised": x,
- "spatial_lag": lbv.EI_sim,
- "itn_raw_pct": df[itn_col].values,
- "incidence_raw": df[inc_col].values,
- })
- res["LISA_Cluster"] = [
- quadrant(row.z_x_standardised, row.spatial_lag, row.p_sim)
- for row in res.itertuples()
- ]
+  res = pd.DataFrame({
+  "district": df[dist_col].values,
+  "local_I": lbv.Is,
+  "p_sim": lbv.p_sim,
+  "z_x_standardised": x,
+  "spatial_lag": lbv.EI_sim,
+  "itn_raw_pct": df[itn_col].values,
+  "incidence_raw": df[inc_col].values,
+  })
+  res["LISA_Cluster"] = [
+  quadrant(row.z_x_standardised, row.spatial_lag, row.p_sim)
+  for row in res.itertuples()
+  ]
 
- counts = res["LISA_Cluster"].value_counts()
- print("\n[/uq-flag] Bivariate LISA Summary (p<0.05, Rook contiguity, 999 permutations):")
- for q in ["High-High", "Low-Low", "High-Low", "Low-High", "Not Significant"]:
- n = counts.get(q, 0)
- print(f" {q:22s}: {n:3d} ({100*n/len(res):.1f}%)")
+  counts = res["LISA_Cluster"].value_counts()
+  print("\n[/uq-flag] Bivariate LISA Summary (p<0.05, Rook contiguity, 999 permutations):")
+  for q in ["High-High", "Low-Low", "High-Low", "Low-High", "Not Significant"]:
+   n = counts.get(q, 0)
+   print(f" {q:22s}: {n:3d} ({100*n/len(res):.1f}%)")
 
- out = os.path.join(PROC, "LISA_Results.csv")
- res.to_csv(out, index=False)
- print(f"\n[03] ✓ LISA results → {out}")
+   out = os.path.join(PROC, "LISA_Results.csv")
+   res.to_csv(out, index=False)
+   print(f"\n[03] ✓ LISA results → {out}")
 
- hh = counts.get("High-High", 0)
- status = "✓" if hh == 36 else "⚠ check ITN column and Rook weights"
- print(f"[03] HH clusters: {hh} (expected 36) {status}")
+   hh = counts.get("High-High", 0)
+   status = "✓" if hh == 36 else "⚠ check ITN column and Rook weights"
+   print(f"[03] HH clusters: {hh} (expected 36) {status}")
 
 
 if __name__ == "__main__":

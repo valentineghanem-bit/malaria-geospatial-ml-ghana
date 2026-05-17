@@ -294,7 +294,7 @@ gdf4 = gdf.merge(df[['DISTRICT','bv_quad']], on='DISTRICT')
 for quad, colour in lisa_colors.items():
  subset = gdf4[gdf4['bv_quad'] == quad]
  if not subset.empty:
- subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
+  subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
 
 gdf4.boundary.plot(ax=ax, linewidth=0.25, color='#555555')
 
@@ -351,7 +351,7 @@ gdf5 = gdf.merge(df[['DISTRICT','gi_cat']], on='DISTRICT')
 for cat, colour in gi_colors.items():
  subset = gdf5[gdf5['gi_cat'] == cat]
  if not subset.empty:
- subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
+  subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
 
 gdf5.boundary.plot(ax=ax, linewidth=0.25, color='#555555')
 
@@ -468,7 +468,7 @@ gdf6['risk_tier'] = gdf6['risk_score'].apply(risk_tier)
 for tier, (colour, label) in enumerate(zip(risk_colours, risk_labels)):
  subset = gdf6[gdf6['risk_tier'] == tier]
  if not subset.empty:
- subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
+  subset.plot(ax=ax, color=colour, linewidth=0.25, edgecolor='#555555')
 
 gdf6.boundary.plot(ax=ax, linewidth=0.25, color='#555555')
 
@@ -493,4 +493,4 @@ plt.close()
 print(' ✓ fig6_risk_score_map.png')
 
 # ─── Save master data for downstream use ─────────────────────────────────────
-df.to_csv(f'{OUTDIR}/master_district_data.csv', index=
+df.to_csv(f'{OUTDIR}/master_district_data.csv', index=False)

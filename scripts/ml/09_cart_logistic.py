@@ -35,20 +35,20 @@ def lodo_evaluate(model_template, X: np.ndarray, y: np.ndarray,
  logo = LeaveOneGroupOut()
  aucs, briers = [], []
  for train_idx, test_idx in logo.split(X, y, groups):
- m = type(model_template)(**model_template.get_params())
- m.fit(X[train_idx], y[train_idx])
- prob = m.predict_proba(X[test_idx])[:, 1]
- if len(np.unique(y[test_idx])) > 1:
- aucs.append(roc_auc_score(y[test_idx], prob))
- briers.append(brier_score_loss(y[test_idx], prob))
- print(f"[09] {name}: AUC={np.mean(aucs):.4f} (SD={np.std(aucs):.4f}) "
- f"Brier={np.mean(briers):.4f}")
- return {
- "model": name, "mean_AUC": round(float(np.mean(aucs)), 4),
- "sd_AUC": round(float(np.std(aucs)), 4),
- "mean_Brier": round(float(np.mean(briers)), 4),
- "n_folds": len(aucs),
- }
+  m = type(model_template)(**model_template.get_params())
+  m.fit(X[train_idx], y[train_idx])
+  prob = m.predict_proba(X[test_idx])[:, 1]
+  if len(np.unique(y[test_idx])) > 1:
+   aucs.append(roc_auc_score(y[test_idx], prob))
+   briers.append(brier_score_loss(y[test_idx], prob))
+   print(f"[09] {name}: AUC={np.mean(aucs):.4f} (SD={np.std(aucs):.4f}) "
+   f"Brier={np.mean(briers):.4f}")
+   return {
+   "model": name, "mean_AUC": round(float(np.mean(aucs)), 4),
+   "sd_AUC": round(float(np.std(aucs)), 4),
+   "mean_Brier": round(float(np.mean(briers)), 4),
+   "n_folds": len(aucs),
+   }
 
 
 def main() -> None:
@@ -69,21 +69,21 @@ def main() -> None:
  cart_res = lodo_evaluate(cart, X, y, groups, "CART")
  cart.fit(X, y) # Final model
  with open(os.path.join(MODELS, "cart_model.pkl"), "wb") as fh:
- pickle.dump(cart, fh)
- print(f"\n[09] CART decision rules (depth≤4):")
- print(export_text(cart, feature_names=feat_names, max_depth=3))
+  pickle.dump(cart, fh)
+  print(f"\n[09] CART decision rules (depth≤4):")
+  print(export_text(cart, feature_names=feat_names, max_depth=3))
 
  # Logistic Regression (L2 penalty, scaled)
- lr_pipe = Pipeline([
- ("scaler", StandardScaler()),
- ("lr", LogisticRegression(C=1.0, max_iter=1000, random_state=SEED)),
- ])
- lr_res = lodo_evaluate(lr_pipe, X, y, groups, "LogisticRegression_L2")
+  lr_pipe = Pipeline([
+  ("scaler", StandardScaler()),
+  ("lr", LogisticRegression(C=1.0, max_iter=1000, random_state=SEED)),
+  ])
+  lr_res = lodo_evaluate(lr_pipe, X, y, groups, "LogisticRegression_L2")
 
  # Save comparison table
- results = pd.DataFrame([cart_res, lr_res])
- results.to_csv(os.path.join(PROC, "cart_logistic_results.csv"), index=False)
- print(f"\n[09] ✓ Results → data/processed/cart_logistic_results.csv")
+  results = pd.DataFrame([cart_res, lr_res])
+  results.to_csv(os.path.join(PROC, "cart_logistic_results.csv"), index=False)
+  print(f"\n[09] ✓ Results → data/processed/cart_logistic_results.csv")
 
 
 if __name__ == "__main__":
