@@ -159,6 +159,23 @@ Open `dashboard/Ghana_Malaria_260District_Dashboard.html` in any modern browser.
 
 ---
 
+## 8a. Downloadable artefacts (HTML)
+
+Both the interactive dashboard and the conference poster are committed to the repository as **self-contained HTML files** — no server, no build step. They can be:
+
+- **Viewed in browser:** open the rendered preview, or clone the repo and open locally
+- **Downloaded:** right-click → *Save link as*, or use the raw URL
+
+| Artefact | View on GitHub | Live preview | Direct download (raw HTML) |
+|----------|----------------|--------------|------------------------------|
+| Interactive dashboard | [`Ghana_Malaria_260District_Dashboard.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_260District_Dashboard.html) |
+| Conference poster | [`Ghana_Malaria_260District_Poster.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_260District_Poster.html) |
+
+> **Tip:** the dashboard works fully offline once downloaded. The poster is print-ready at A0 (841 × 1189 mm).
+
+
+---
+
 ## 9. Reporting Standard
 
 This study follows the **STROBE** (Strengthening the Reporting of Observational Studies in Epidemiology) reporting guideline for observational ecological studies.
@@ -212,8 +229,6 @@ Code is released under the **MIT License** — see [LICENSE](LICENSE) for detail
 - **WHO Global Health Observatory** for national-level indicators.
 - **WorldPop** for high-resolution population surfaces.
 - **Ghana Health Service (DHIMS2)** for routine malaria surveillance data.
-- **AIPOCH** (Anti-hallucination Pipeline for Open Computational Health) v6.0 quad-connector citation verification (PubMed · Consensus · Scholar · Scite).
 
 ---
 
-*This README follows the AIPOCH v6.0 standardised research-output template (May 2026). All repository READMEs in the [valentineghanem-bit](https://github.com/valentineghanem-bit) organisation share this structure.*
