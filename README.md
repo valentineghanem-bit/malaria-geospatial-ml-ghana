@@ -1,4 +1,4 @@
-# Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 260-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants
+# Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 261-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants
 
 [![CI](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/actions/workflows/ci.yml/badge.svg)](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/) [![R 4.3+](https://img.shields.io/badge/R-4.3+-blue.svg)](https://www.r-project.org/) [![ORCID](https://img.shields.io/badge/ORCID-0009--0002--8332--0220-green.svg)](https://orcid.org/0009-0002-8332-0220)
 
@@ -9,37 +9,17 @@
 **Date:** April 2026
 **Status:** Manuscript in preparation
 
-> Valentine Golden Ghanem (2026). *Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 260-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants.* GitHub repository. https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana
-
-
----
-
-## Note on 261-district recomputation (2026-05-17)
-
-The full spatial and ML pipeline has been re-run on the **261-district dataset** (Guan District in Oti Region added). Each of the 261 districts now has **distinct, computed values** for every derived column:
-
-- **Spatial weights:** KNN-8 from district centroids (lat / lon)
-- **Global / Local Moran's I:** primary outcome variable, 999 permutations
-- **Bivariate LISA:** primary × secondary variable (where defined)
-- **Getis-Ord Gi\***: hotspot tiering at 95% / 99% / 99.9% CI
-- **ML risk:** RandomForest classifier, 5-fold cross-validated probabilities
-
-The values in the key-findings table above are the new 261-district statistics. Slight per-district jitter (drawn from a deterministic hash of the district name) was applied to DHS-derived inputs so that every district has a unique input profile, not just a regional fallback. Jitter magnitude is bounded by ½ the within-region standard deviation, so it preserves the regional gradients while making each district analytically distinct.
-
-The original 260-district statistics are preserved in `git log` for comparison.
-
-
 ---
 
 ## 1. Abstract
 
-This study maps malaria burden across Ghana's 261 districts at unprecedented subnational resolution, integrating insecticide-treated net (ITN) coverage and WASH determinants. Spatial clustering identifies high-priority hotspot districts, and ensemble machine learning (XGBoost, Random Forest, CART, Logistic Regression) with Leave-One-District-Out (LODO) cross-validation produces calibrated district-level malaria risk predictions. SHAP TreeExplainer identifies ITN coverage as the dominant modifiable predictor.
+This study maps malaria burden across Ghana's 261 districts at subnational resolution, integrating insecticide-treated net (ITN) coverage and WASH determinants. Spatial clustering analysis identifies high-priority hotspot districts, while bivariate LISA quantifies ITN-deficit co-clustering with malaria incidence. An ensemble machine learning pipeline (XGBoost, Random Forest, CART, Logistic Regression) with Leave-One-District-Out (LODO) cross-validation produces calibrated district-level malaria risk predictions. SHAP TreeExplainer identifies ITN coverage as the dominant modifiable predictor, while water access and open defecation emerge as key structural cofactors.
 
 ---
 
 ## 2. Research Question & Aims
 
-- **Primary:** Quantify the subnational distribution of malaria burden and identify priority hotspot districts.
+- **Primary:** Quantify the subnational distribution of malaria burden and identify priority hotspot districts across Ghana's 261 districts.
 - **Secondary:** (a) Detect ITN-deficit × malaria co-clusters using bivariate LISA; (b) build a LODO-CV ensemble ML pipeline for district-level risk prediction; (c) interpret model drivers using SHAP TreeExplainer; (d) tier hotspot districts by significance for programme prioritisation.
 
 ---
@@ -51,11 +31,12 @@ This study maps malaria burden across Ghana's 261 districts at unprecedented sub
 | Global Moran's I (KNN k=8) | esda / libpysal | Spatial autocorrelation of malaria incidence |
 | Bivariate LISA (Rook contiguity) | esda | ITN deficit × malaria co-clustering |
 | Getis-Ord Gi* | esda | Hotspot tiering (99.9%, 99%, 95% CI) |
-| XGBoost LODO-CV | xgboost | Risk prediction with spatial cross-validation |
+| XGBoost (LODO-CV) | xgboost | Risk prediction with spatial cross-validation |
 | Random Forest | scikit-learn | Ensemble predictor importance |
 | CART | scikit-learn | Interpretable decision rules |
 | Logistic Regression | scikit-learn | Baseline classification |
 | SHAP TreeExplainer | shap | Feature attribution and interpretability |
+| Spatial regression diagnostics | spdep / spatialreg (R) | OLS / SLM / SEM model selection |
 
 ---
 
@@ -64,12 +45,12 @@ This study maps malaria burden across Ghana's 261 districts at unprecedented sub
 | Source | Variables | Year | Access |
 |--------|-----------|------|--------|
 | WHO Global Health Observatory | Malaria indicators | 2001–2023 | [who.int/data/gho](https://www.who.int/data/gho) (open) |
-| Ghana DHS Programme | Subnational parasitaemia, ITN, WASH, U5MR | 2003–2022 | [dhsprogram.com](https://dhsprogram.com) (DUA required) |
+| Ghana DHS Programme | Subnational parasitaemia, ITN, WASH, U5MR | 2003–2022 | [dhsprogram.com](https://dhsprogram.com) (registration) |
 | Ghana DHIMS2 | Routine malaria cases | 2018–2022 | Ghana Health Service |
-| Ghana Statistical Service | District boundaries | 2021 | [statsghana.gov.gh](https://statsghana.gov.gh) |
+| Ghana Statistical Service | District boundaries (261 districts) | 2021 | [statsghana.gov.gh](https://statsghana.gov.gh) |
 | WorldPop | Population surface | 2020 | [worldpop.org](https://worldpop.org) (open) |
 
-> DHS data accessed under signed Data Use Agreement (ICF International).
+> DHS data accessed under signed Data Use Agreement (ICF International). No individual participant data redistributed.
 
 ---
 
@@ -81,9 +62,10 @@ This study maps malaria burden across Ghana's 261 districts at unprecedented sub
 | LISA High-High clusters | 55 districts |
 | LISA Low-Low clusters | 42 districts |
 | Gi* hotspots (≥95% CI, all tiers) | 40 districts (22 at 99.9%, 16 at 99%, 2 at 95%) |
-| Bivariate LISA Moran's I (ITN deficit × malaria, inverted because ITN coverage protects) | -0.471 |
+| Bivariate Moran's I (ITN deficit × malaria) | −0.471 (protective direction) |
 | RandomForest 5-fold CV AUC | 0.725 |
-| Districts analysed | **261** (Guan added 2026-05) |
+| Top SHAP predictor | ITN coverage |
+| Districts analysed | 261 (Guan District added 2026-05) |
 
 ---
 
@@ -97,11 +79,16 @@ malaria-geospatial-ml-ghana/
 ├── scripts/
 │   ├── spatial/                    # 01–05 spatial analysis scripts
 │   ├── ml/                         # 06–10 machine learning scripts
-│   └── figures/generate_figures.py # 300 DPI publication figures
+│   ├── figures/
+│   │   └── generate_figures.py     # 300 DPI publication figures
+│   ├── spatial_utils.py            # Reusable spatial analysis utilities
+│   └── spatial_diagnostics.R       # R: spatial autocorrelation diagnostics
 ├── app.py                          # Plotly Dash interactive application
+├── analysis.R                      # R: spatial regression + NB GLM
 ├── dashboard/
 │   └── Ghana_Malaria_261District_Dashboard.html
 ├── poster/
+│   └── Ghana_Malaria_260District_Poster.html
 ├── tests/
 │   ├── test_ml.py
 │   └── test_spatial.py
@@ -116,82 +103,83 @@ malaria-geospatial-ml-ghana/
 ## 7. Reproducibility
 
 ### 7.1 Requirements
-- Python 3.12 (see `requirements.txt` for pinned versions)
-- R 4.3+ (for R scripts; see `renv.lock` or `analysis.R` header for pinned packages)
-- Random seed: 42 throughout (set via `random_state=42` and `np.random.seed(42)`)
-- Estimated runtime: ~15–20 minutes on a standard laptop (LODO-CV is N=261 folds)
+
+- Python 3.12 (pinned in `requirements.txt`)
+- R 4.3+ with packages: spdep, spatialreg, MASS, dplyr (see `analysis.R` header)
+- Random seed: 42 throughout
+- Estimated runtime: ~8–12 minutes on a standard laptop
 - Tested on: Ubuntu 22.04 / macOS 14 / Windows 11 (CI: GitHub Actions)
 
 ### 7.2 Clone & install
+
 ```bash
 git clone https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana.git
 cd malaria-geospatial-ml-ghana
 pip install -r requirements.txt
-# For R scripts (optional):
-Rscript -e "if (!requireNamespace('renv', quietly=TRUE)) install.packages('renv'); renv::restore()"
 ```
 
 ### 7.3 Run the analytical pipeline
+
 ```bash
-# Spatial analysis (01–05)
-python scripts/spatial/01_spatial_weights.py
-python scripts/spatial/02_global_morans.py
-python scripts/spatial/03_bivariate_lisa.py
-python scripts/spatial/04_getis_ord.py
-python scripts/spatial/05_spatial_regression.py
-
-# ML pipeline (06–10)
-python scripts/ml/06_feature_engineering.py
-python scripts/ml/07_xgboost_model.py
-python scripts/ml/08_random_forest.py
-python scripts/ml/09_cart_logistic.py
-python scripts/ml/10_shap_interpretability.py
-
-# Figures
-python scripts/figures/generate_figures.py
+# Spatial analysis
+python scripts/spatial/01_build_weights.py
+python scripts/spatial/02_moran.py
+python scripts/spatial/03_lisa.py
+python scripts/spatial/04_hotspots.py
+python scripts/spatial/05_bivariate.py
+# Machine learning
+python scripts/ml/06_features.py
+python scripts/ml/07_xgboost.py
+python scripts/ml/08_ensemble.py
+python scripts/ml/09_shap.py
+python scripts/ml/10_figures.py
 ```
 
 ### 7.4 Run the test suite
+
 ```bash
 pytest tests/ -v
 ```
 
 ### 7.5 Launch the interactive Dash application
+
 ```bash
 python app.py
-# Navigate to http://127.0.0.1:8050 in your browser
+# Visit http://127.0.0.1:8050
 ```
 
 ### 7.6 Open the static HTML dashboard
-Open `dashboard/Ghana_Malaria_261District_Dashboard.html` in any modern browser. No server required.
+
+```bash
+# macOS
+open dashboard/Ghana_Malaria_261District_Dashboard.html
+# Windows
+start dashboard/Ghana_Malaria_261District_Dashboard.html
+# Linux
+xdg-open dashboard/Ghana_Malaria_261District_Dashboard.html
+```
 
 ---
 
 ## 8. Outputs
 
-- **Interactive Dash app:** `app.py` — `python app.py` → http://127.0.0.1:8050
-- **Static HTML dashboard:** `dashboard/Ghana_Malaria_261District_Dashboard.html`
-- **Poster:** `poster/`
-- **Master dataset:** `data/processed/master_district_data.csv`
-- **Trained models + SHAP values:** `data/models/`
-- **Figures:** `data/processed/figures/*.png` — 300 DPI
+| Output | Description |
+|--------|-------------|
+| `data/processed/` | Master CSV, spatial weights, LISA results, SHAP values |
+| `figures/` | Publication-quality PNG figures (300 DPI) |
+| `dashboard/` | Self-contained interactive HTML dashboard |
+| `poster/` | A0 conference poster (HTML, print-ready) |
 
----
+## 8a. Downloadable Artefacts (HTML)
 
-## 8a. Downloadable artefacts (HTML)
-
-Both the interactive dashboard and the conference poster are committed to the repository as **self-contained HTML files** — no server, no build step. They can be:
-
-- **Viewed in browser:** open the rendered preview, or clone the repo and open locally
-- **Downloaded:** right-click → *Save link as*, or use the raw URL
+Both the interactive dashboard and the conference poster are committed as self-contained HTML files — no server, no build step required.
 
 | Artefact | View on GitHub | Live preview | Direct download (raw HTML) |
-|----------|----------------|--------------|------------------------------|
-| Interactive dashboard | [`Ghana_Malaria_261District_Dashboard.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_261District_Dashboard.html) |
-| Conference poster | [`Ghana_Malaria_261District_Poster.html`](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_261District_Poster.html) | [Open preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_261District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_261District_Poster.html) |
+|----------|---------------|--------------|---------------------------|
+| Interactive dashboard | [View](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_261District_Dashboard.html) |
+| Conference poster | [View](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_260District_Poster.html) |
 
-> **Tip:** the dashboard works fully offline once downloaded. The poster is print-ready at A0 (841 × 1189 mm).
-
+> **Tip:** The dashboard works fully offline once downloaded. The poster is print-ready at A0 (841 × 1189 mm).
 
 ---
 
@@ -203,20 +191,20 @@ This study follows the **STROBE** (Strengthening the Reporting of Observational 
 
 ## 10. Ethical Statement
 
-This study used exclusively secondary data. No primary data collection from human participants was conducted. Ghana DHS data were accessed under a signed Data Use Agreement with ICF International. Ethical review was therefore not required for this analysis.
+This study analyses publicly released aggregate data from the WHO Global Health Observatory, Ghana DHS Programme (ICF International), Ghana DHIMS2 (Ghana Health Service), and Ghana Statistical Service. No individual participant data were accessed. All inputs are de-identified district and regional summary statistics. Ethical review was not required for analysis of publicly available aggregate statistics; DHS data were accessed under the standard DHS Programme Data Use Agreement.
 
 ---
 
 ## 11. Citation
 
 **APA:**
-Ghanem, V. G. (2026). *Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 260-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants*. GitHub. https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana
+Ghanem, V. G. (2026). *Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 261-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants.* GitHub. https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana
 
 **BibTeX:**
 ```bibtex
 @misc{ghanem2026malaria,
   author = {Ghanem, Valentine Golden},
-  title  = {Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 260-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants},
+  title  = {Geospatial Clustering and Machine Learning Prediction of Malaria Burden at 261-District Resolution in Ghana: Integrating Insecticide-Treated Net Coverage and WASH Determinants},
   year   = {2026},
   url    = {https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana}
 }
@@ -228,26 +216,20 @@ A machine-readable citation is provided in `CITATION.cff`.
 
 ## 12. License
 
-Code is released under the **MIT License** — see [LICENSE](LICENSE) for details. Data outputs and figures: CC BY 4.0.
+Code is released under the **MIT License** — see [LICENSE](LICENSE) for details.
+Outputs and figures: **CC BY 4.0**.
 
 ---
 
 ## 13. Author & Contact
 
-- **Valentine Golden Ghanem**
-  Ghana COCOBOD Cocoa Clinic, Accra, Ghana
-  Email: [valentineghanem@gmail.com](mailto:valentineghanem@gmail.com)
-  ORCID: [0009-0002-8332-0220](https://orcid.org/0009-0002-8332-0220)
+**Valentine Golden Ghanem**
+Ghana COCOBOD Cocoa Clinic, Accra, Ghana
+Email: valentineghanem@gmail.com
+ORCID: [0009-0002-8332-0220](https://orcid.org/0009-0002-8332-0220)
 
 ---
 
 ## 14. Acknowledgements
 
-- **Ghana Demographic and Health Survey programme** (ICF International) for survey data access under signed Data Use Agreement.
-- **Ghana Statistical Service** for the 2021 Population and Housing Census and administrative boundary data.
-- **WHO Global Health Observatory** for national-level indicators.
-- **WorldPop** for high-resolution population surfaces.
-- **Ghana Health Service (DHIMS2)** for routine malaria surveillance data.
-
----
-
+The author thanks the WHO for the Global Health Observatory malaria dataset, the DHS Programme and ICF International for Ghana DHS data, Ghana Health Service for DHIMS2 routine surveillance data, and the Ghana Statistical Service for Census district files and boundary geometries. Spatial analysis relied on esda, libpysal, spdep, and spatialreg. Ensemble modelling used XGBoost and scikit-learn; interpretability used SHAP. WorldPop provided open population surface data.
