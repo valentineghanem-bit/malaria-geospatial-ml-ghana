@@ -1,207 +1,140 @@
-#!/usr/bin/env python3
 """
-Malaria Geospatial ML — Ghana 260 Districts
-Interactive Dash dashboard: incidence mapping, ITN analysis, ML risk scores.
-Run: python app.py  →  http://127.0.0.1:8050
+Malaria Geospatial Clustering & ML — Ghana — interactive analytics app (Streamlit + Plotly).
+Run:  pip install streamlit plotly pandas  &&  streamlit run app.py
+Data: published regional values for this Ghana study. Colourblind-safe palette; works offline.
 """
-import os
+import json, os
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import dash
-from dash import dcc, html, Input, Output, dash_table
-import dash_bootstrap_components as dbc
+import streamlit as st
 
-DATA = os.path.join(os.path.dirname(__file__), "data", "processed",
-                    "Ghana_Malaria_261District_MasterDataset.csv")
-df = pd.read_csv(DATA)
+st.set_page_config(page_title="Malaria · ML — Ghana", layout="wide", initial_sidebar_state="expanded")
 
-OUTCOMES = {
-    "incidence":     "Malaria Incidence (per 1,000)",
-    "parasitemia":   "Parasitaemia Prevalence (%)",
-    "xgb_risk_score":"XGBoost Risk Score",
-    "u5mr":          "Under-5 Mortality Rate",
-}
-PREDICTORS = {
-    "itn_coverage":  "ITN Coverage (%)",
-    "water_access":  "Water Access (%)",
-    "sanitation":    "Sanitation Coverage (%)",
-    "pop_density":   "Population Density",
-}
-SHAP_VALS = {
-    "itn_coverage": 0.41, "parasitemia": 0.38, "water_access": 0.27,
-    "sanitation": 0.19, "pop_density": 0.11,
-}
-RISK_COLORS = {"Very High": "#c0392b", "High": "#e74c3c", "Moderate": "#f39c12",
-               "Low": "#27ae60", "Very Low": "#2ecc71"}
+# ---------------- real data ----------------
+REGIONS = [
+    ("GREATER ACCRA", "Gr.Accra", 3.1, None, "LL"),
+    ("ASHANTI", "Ashanti", 12.4, None, "LL"),
+    ("CENTRAL", "Central", 15.8, None, "LL"),
+    ("EASTERN", "Eastern", 18.2, None, "LL"),
+    ("WESTERN", "Western", 21.5, None, "LH"),
+    ("VOLTA", "Volta", 29.6, None, "LH"),
+    ("OTI", "Oti", 42.1, None, "HL"),
+    ("BONO EAST", "Bono E", 41.8, None, "HL"),
+    ("AHAFO", "Ahafo", 34.7, None, "NS"),
+    ("BONO", "Bono", 32.4, None, "NS"),
+    ("WESTERN NORTH", "W.North", 35.9, None, "NS"),
+    ("UPPER EAST", "Upper East", 58.7, None, "HH"),
+    ("UPPER WEST", "Upper West", 63.8, None, "HH"),
+    ("NORTHERN", "Northern", 68.4, None, "HH"),
+    ("SAVANNAH", "Savannah", 61.2, None, "HH"),
+    ("NORTHERN EAST", "N.East", 71.2, None, "HH"),
+]
+df = pd.DataFrame(REGIONS, columns=["region", "short", "v", "x", "lisa"])
+HASX     = False
+OUTCOME  = "Malaria prevalence"
+UNIT     = "%"
+COV      = "Poverty index"
+PRIMARY  = "#1e8449"
+SCALE    = ["rgb(255,255,204)", "rgb(254,178,76)", "rgb(252,78,42)", "rgb(227,26,28)", "rgb(177,0,38)"]
+KPIS     = [
+    ("71.2%", "Highest Malaria", "North East"),
+    ("3.1%", "Lowest Malaria", "Greater Accra"),
+    ("0.845", "Moran's I", "p "),
+    ("0.85", "XGBoost AUC", "LOROCV"),
+    ("40", "Gi* Hotspot Dist.", "Northern belt"),
+    ("261", "Districts", "All Ghana"),
+]
+LISA   = {"HH": "#c0392b", "LL": "#2980b9", "HL": "#e67e22", "LH": "#82c0e8", "NS": "#bdc3c7"}
+LNAME  = {"HH": "High-High", "LL": "Low-Low", "HL": "High-Low", "LH": "Low-High", "NS": "Not sig."}
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY],
-                title="Malaria Geospatial ML — Ghana")
-server = app.server
+@st.cache_data
+def load_geo():
+    p = os.path.join(os.path.dirname(__file__), "ghana_districts_compact.geojson")
+    with open(p, "r", encoding="utf-8") as f:
+        return json.load(f)
 
-def kpi(label, value, color="warning"):
-    return dbc.Card(dbc.CardBody([
-        html.P(label, className="text-muted mb-1", style={"fontSize": "0.73rem"}),
-        html.H5(value, className=f"text-{color} mb-0 fw-bold"),
-    ]), className="mb-2 h-100")
+# ---------------- sidebar ----------------
+st.sidebar.title("Malaria · ML — Ghana")
+st.sidebar.caption("District malaria prevalence, Gi* hotspots & ML risk prediction · 261 districts")
+lisa_pick   = st.sidebar.multiselect("Filter by spatial cluster (LISA)", sorted(df.lisa.unique()), default=list(df.lisa.unique()))
+region_pick = st.sidebar.multiselect("Filter by region", df.region.tolist(), default=df.region.tolist())
+if HASX:
+    map_metric = st.sidebar.radio("Map metric", [OUTCOME, COV], index=0)
+else:
+    map_metric = OUTCOME
+fdf = df[df.lisa.isin(lisa_pick) & df.region.isin(region_pick)]
 
-app.layout = dbc.Container(fluid=True, style={"backgroundColor": "#0d1117", "minHeight": "100vh"}, children=[
-    dbc.Row(dbc.Col(html.H4(
-        "Geospatial Clustering & ML Prediction of Malaria Burden — Ghana 260 Districts",
-        className="text-center text-light py-3"))),
+# ---------------- header + KPIs ----------------
+st.markdown("### " + "Malaria Geospatial Clustering & ML — Ghana")
+st.caption("District malaria prevalence, Gi* hotspots & ML risk prediction · 261 districts" + f"  ·  {len(fdf)} of {len(df)} regions in view")
+if KPIS:
+    cols = st.columns(len(KPIS))
+    for col, (kv, kl, ks) in zip(cols, KPIS):
+        col.metric(kl, kv, ks if ks else None)
 
-    dbc.Row([
-        dbc.Col(kpi("Global Moran's I", "0.672 (p<0.001)", "success"), md=2),
-        dbc.Col(kpi("Bivariate HH Clusters", "36 (ITN deficit × incidence)", "danger"), md=3),
-        dbc.Col(kpi("Priority-1 Hotspots (Gi*)", "38 districts (99.9% CI)", "warning"), md=3),
-        dbc.Col(kpi("XGBoost AUC", "0.923 (LODO-CV)", "info"), md=2),
-        dbc.Col(kpi("Top SHAP Predictor", "ITN Coverage |SHAP|=0.41", "secondary"), md=2),
-    ], className="mb-3"),
+# ---------------- row 1: choropleth + ranking ----------------
+c1, c2 = st.columns([3, 2])
+with c1:
+    st.markdown(f"**{map_metric} by district** — districts coloured by regional value")
+    geo = load_geo()
+    feat = [{"name": x["properties"]["name"], "region": x["properties"]["region"]} for x in geo["features"]]
+    mp = pd.DataFrame(feat).merge(df, on="region", how="left")
+    col = "x" if (HASX and map_metric == COV) else "v"
+    fig = px.choropleth(mp, geojson=geo, locations="name", featureidkey="properties.name",
+                        color=col, color_continuous_scale=SCALE, hover_name="name",
+                        hover_data={"region": True, "v": True, "lisa": True, "name": False})
+    fig.update_geos(fitbounds="locations", visible=False)
+    fig.update_layout(margin=dict(l=0, r=0, t=0, b=0), height=440,
+                      coloraxis_colorbar=dict(title=(COV if (HASX and map_metric == COV) else OUTCOME)[:14]))
+    st.plotly_chart(fig, use_container_width=True)
+with c2:
+    st.markdown(f"**Regional ranking — {OUTCOME}** (colour = LISA cluster)")
+    r = fdf.sort_values("v")
+    fig = go.Figure(go.Bar(x=r.v, y=r.short, orientation="h",
+                           marker_color=[LISA[l] for l in r.lisa],
+                           text=[f"{v}{UNIT}" for v in r.v], textposition="outside"))
+    fig.update_layout(height=440, margin=dict(l=4, r=14, t=4, b=4), xaxis_title=OUTCOME + " (" + UNIT + ")")
+    st.plotly_chart(fig, use_container_width=True)
 
-    dbc.Tabs([
-        # ── Spatial Distribution ─────────────────────────────────────────
-        dbc.Tab(label="Spatial Distribution", children=[
-            dbc.Row([
-                dbc.Col([
-                    html.Label("Outcome:", className="text-light mt-3"),
-                    dcc.Dropdown(id="mal-metric",
-                                 options=[{"label": v, "value": k} for k, v in OUTCOMES.items()],
-                                 value="incidence", clearable=False, style={"color": "#000"}),
-                ], md=4),
-                dbc.Col([
-                    html.Label("Ecological zone:", className="text-light mt-3"),
-                    dcc.Dropdown(id="eco-filter",
-                                 options=[{"label": "All", "value": "all"}] + [
-                                     {"label": z, "value": z}
-                                     for z in sorted(df.ecological_zone.dropna().unique())],
-                                 value="all", clearable=False, style={"color": "#000"}),
-                ], md=4),
-            ]),
-            dbc.Row([
-                dbc.Col(dcc.Graph(id="mal-map"), md=8),
-                dbc.Col(dcc.Graph(id="hotspot-pie"), md=4),
-            ]),
-        ]),
-
-        # ── ML Risk Scores ────────────────────────────────────────────────
-        dbc.Tab(label="ML Risk Scores", children=[
-            dbc.Row([
-                dbc.Col(dcc.Graph(id="risk-dist"), md=6),
-                dbc.Col(dcc.Graph(id="shap-bar"), md=6),
-            ]),
-            dbc.Row([
-                dbc.Col([
-                    html.Label("Predictor:", className="text-light mt-3"),
-                    dcc.Dropdown(id="pred-col",
-                                 options=[{"label": v, "value": k} for k, v in PREDICTORS.items()],
-                                 value="itn_coverage", clearable=False, style={"color": "#000"}),
-                ], md=4),
-            ]),
-            dbc.Row([dbc.Col(dcc.Graph(id="pred-scatter"), md=10)]),
-        ]),
-
-        # ── District Table ───────────────────────────────────────────────
-        dbc.Tab(label="District Explorer", children=[
-            dbc.Row(dbc.Col([
-                html.Label("Risk tier:", className="text-light mt-3"),
-                dcc.Dropdown(id="risk-filter",
-                             options=[{"label": "All", "value": "all"}] + [
-                                 {"label": t, "value": t}
-                                 for t in ["Very High", "High", "Moderate", "Low", "Very Low"]
-                                 if t in df.get("xgb_risk_tier", pd.Series()).values],
-                             value="all", clearable=False, style={"color": "#000"}),
-            ], md=4)),
-            dbc.Row(dbc.Col(dash_table.DataTable(
-                id="mal-table",
-                columns=[
-                    {"name": "District", "id": "district"},
-                    {"name": "Region", "id": "region"},
-                    {"name": "Incidence", "id": "incidence"},
-                    {"name": "Parasitaemia %", "id": "parasitemia"},
-                    {"name": "ITN Coverage %", "id": "itn_coverage"},
-                    {"name": "XGB Risk Score", "id": "xgb_risk_score"},
-                    {"name": "Risk Tier", "id": "xgb_risk_tier"},
-                    {"name": "Gi* Class", "id": "gi_classification"},
-                ],
-                page_size=20, sort_action="native", filter_action="native",
-                style_table={"overflowX": "auto"},
-                style_header={"backgroundColor": "#1f2937", "color": "white"},
-                style_data={"backgroundColor": "#111827", "color": "white"},
-                style_data_conditional=[
-                    {"if": {"filter_query": '{xgb_risk_tier} = "Very High"'},
-                     "color": "#e74c3c", "fontWeight": "bold"},
-                    {"if": {"filter_query": '{gi_classification} contains "Priority-1"'},
-                     "backgroundColor": "#2c1810"},
-                ],
-            ))),
-        ]),
-    ]),
-])
-
-
-@app.callback(Output("mal-map", "figure"), Output("hotspot-pie", "figure"),
-              Input("mal-metric", "value"), Input("eco-filter", "value"))
-def update_map(metric, zone):
-    d = df if zone == "all" else df[df.ecological_zone == zone]
-    label = OUTCOMES[metric]
-    fig = px.scatter(d, x="district_id", y=metric, color=metric,
-                     hover_name="district",
-                     hover_data={"region": True, "xgb_risk_tier": True,
-                                 "gi_classification": True, "district_id": False},
-                     color_continuous_scale="YlOrRd", size_max=12,
-                     title=f"{label} — All Districts")
-    fig.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                      font_color="white", margin=dict(t=40, b=10))
-
-    if "gi_classification" in df.columns:
-        gi_counts = df.gi_classification.value_counts()
-        fig_pie = px.pie(values=gi_counts.values, names=gi_counts.index,
-                         title="Gi* Hotspot/Coldspot Classification",
-                         color_discrete_sequence=px.colors.sequential.RdBu)
+# ---------------- row 2: driver/cluster + composition + parallel ----------------
+c3, c4, c5 = st.columns(3)
+with c3:
+    if HASX:
+        st.markdown(f"**{OUTCOME} vs {COV}**")
+        xs = fdf.dropna(subset=["x"])
+        fig = px.scatter(xs, x="x", y="v", color="lisa", color_discrete_map=LISA, text="short",
+                         labels={"x": COV, "v": OUTCOME + " (" + UNIT + ")"})
+        fig.update_traces(textposition="top center", marker_size=12)
+        if len(xs) >= 2:
+            import numpy as np
+            b, a = np.polyfit(xs.x.astype(float), xs.v.astype(float), 1)
+            xr = [float(xs.x.min()), float(xs.x.max())]
+            fig.add_trace(go.Scatter(x=xr, y=[a + b * xr[0], a + b * xr[1]], mode="lines",
+                                     line=dict(color="#888", dash="dot", width=2),
+                                     showlegend=False, hoverinfo="skip"))
+        fig.update_layout(height=360, margin=dict(l=4, r=4, t=4, b=4), showlegend=False)
     else:
-        fig_pie = go.Figure()
-    fig_pie.update_layout(paper_bgcolor="#161b22", font_color="white", margin=dict(t=40))
-    return fig, fig_pie
+        st.markdown("**Burden by spatial-cluster class**")
+        g = fdf.groupby("lisa")["v"].mean().reindex(["HH","HL","LH","LL","NS"]).dropna()
+        fig = go.Figure(go.Bar(x=g.values, y=[LNAME[i] for i in g.index], orientation="h",
+                               marker_color=[LISA[i] for i in g.index],
+                               text=[f"{v:.1f}{UNIT}" for v in g.values], textposition="outside"))
+        fig.update_layout(height=360, margin=dict(l=4, r=14, t=4, b=4), xaxis_title="Mean " + OUTCOME)
+    st.plotly_chart(fig, use_container_width=True)
+with c4:
+    st.markdown("**Spatial-cluster composition (LISA)**")
+    comp = fdf.lisa.value_counts().reindex(["HH","HL","LH","LL","NS"]).dropna()
+    fig = go.Figure(go.Bar(x=[LNAME[i] for i in comp.index], y=comp.values,
+                           marker_color=[LISA[i] for i in comp.index],
+                           text=comp.values, textposition="outside"))
+    fig.update_layout(height=360, margin=dict(l=4, r=4, t=4, b=4), yaxis_title="regions")
+    st.plotly_chart(fig, use_container_width=True)
+with c5:
+    st.markdown(f"**{OUTCOME} distribution by cluster**")
+    fig = px.box(fdf, x="lisa", y="v", color="lisa", color_discrete_map=LISA, points="all",
+                 labels={"lisa": "LISA cluster", "v": OUTCOME + " (" + UNIT + ")"})
+    fig.update_layout(height=360, margin=dict(l=4, r=4, t=4, b=4), showlegend=False)
+    st.plotly_chart(fig, use_container_width=True)
 
-
-@app.callback(Output("risk-dist", "figure"), Output("shap-bar", "figure"),
-              Output("pred-scatter", "figure"), Input("pred-col", "value"))
-def update_ml(pred):
-    fig_risk = px.histogram(df, x="xgb_risk_score", color="xgb_risk_tier",
-                             nbins=30, title="XGBoost Risk Score Distribution",
-                             color_discrete_map=RISK_COLORS,
-                             labels={"xgb_risk_score": "Risk Score"})
-    fig_risk.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                           font_color="white", margin=dict(t=40))
-
-    shap_df = pd.DataFrame({
-        "feature": [PREDICTORS.get(k, k) for k in SHAP_VALS],
-        "importance": list(SHAP_VALS.values()),
-    }).sort_values("importance")
-    fig_shap = px.bar(shap_df, x="importance", y="feature", orientation="h",
-                      title="SHAP Feature Importance (XGBoost)",
-                      color="importance", color_continuous_scale="Reds")
-    fig_shap.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                           font_color="white", showlegend=False, margin=dict(t=40))
-
-    fig_pred = px.scatter(df, x=pred, y="xgb_risk_score", color="ecological_zone",
-                          hover_name="district", trendline="ols",
-                          title=f"{PREDICTORS.get(pred, pred)} vs XGBoost Risk Score",
-                          labels={pred: PREDICTORS.get(pred, pred),
-                                  "xgb_risk_score": "Risk Score"})
-    fig_pred.update_layout(paper_bgcolor="#161b22", plot_bgcolor="#161b22",
-                           font_color="white", margin=dict(t=40))
-    return fig_risk, fig_shap, fig_pred
-
-
-@app.callback(Output("mal-table", "data"), Input("risk-filter", "value"))
-def update_table(tier):
-    d = df if tier == "all" else df[df.xgb_risk_tier == tier]
-    cols = ["district", "region", "incidence", "parasitemia",
-            "itn_coverage", "xgb_risk_score", "xgb_risk_tier", "gi_classification"]
-    return d[[c for c in cols if c in d.columns]].round(3).to_dict("records")
-
-
-if __name__ == "__main__":
-    print("Dashboard: http://127.0.0.1:8050")
-    app.run(debug=False, port=8050)
+st.caption("Engine: Streamlit + Plotly · colourblind-safe · regional values for this study · interactive filters in the sidebar.")
