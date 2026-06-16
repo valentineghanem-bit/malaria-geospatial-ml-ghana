@@ -86,7 +86,7 @@ malaria-geospatial-ml-ghana/
 ├── app.py                          # Plotly Dash interactive application
 ├── analysis.R                      # R: spatial regression + NB GLM
 ├── dashboard/
-│   └── Ghana_Malaria_261District_Dashboard.html
+│   └── Ghana_Malaria_260District_Dashboard.html
 ├── poster/
 │   └── Ghana_Malaria_260District_Poster.html
 ├── tests/
@@ -152,11 +152,11 @@ python app.py
 
 ```bash
 # macOS
-open dashboard/Ghana_Malaria_261District_Dashboard.html
+open dashboard/Ghana_Malaria_260District_Dashboard.html
 # Windows
-start dashboard/Ghana_Malaria_261District_Dashboard.html
+start dashboard/Ghana_Malaria_260District_Dashboard.html
 # Linux
-xdg-open dashboard/Ghana_Malaria_261District_Dashboard.html
+xdg-open dashboard/Ghana_Malaria_260District_Dashboard.html
 ```
 
 ---
@@ -176,7 +176,7 @@ Both the interactive dashboard and the conference poster are committed as self-c
 
 | Artefact | View on GitHub | Live preview | Direct download (raw HTML) |
 |----------|---------------|--------------|---------------------------|
-| Interactive dashboard | [View](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_261District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_261District_Dashboard.html) |
+| Interactive dashboard | [View](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/dashboard/Ghana_Malaria_260District_Dashboard.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/dashboard/Ghana_Malaria_260District_Dashboard.html) |
 | Conference poster | [View](https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Preview](https://htmlpreview.github.io/?https://github.com/valentineghanem-bit/malaria-geospatial-ml-ghana/blob/main/poster/Ghana_Malaria_260District_Poster.html) | [Download](https://raw.githubusercontent.com/valentineghanem-bit/malaria-geospatial-ml-ghana/main/poster/Ghana_Malaria_260District_Poster.html) |
 
 > **Tip:** The dashboard works fully offline once downloaded. The poster is print-ready at A0 (841 × 1189 mm).
